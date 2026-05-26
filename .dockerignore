@@ -1,0 +1,13 @@
+.git/
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+static/debug*.jpg
+.env
+.env.*
