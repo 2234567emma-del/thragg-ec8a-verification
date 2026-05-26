@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>THRAGG | Election Verification Intelligence</title>
+
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}?v=2">
+    <style>
+
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:Arial,sans-serif;
+            background:#080f1f;
+            color:#f8fafc;
+            overflow-x:hidden;
+        }
+
+        .navbar{
+            height:72px;
+            padding:0 7%;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            border-bottom:1px solid #1e293b;
+            background:rgba(8,15,31,0.95);
+            backdrop-filter:blur(10px);
+        }
+
+        .brand{
+            font-size:22px;
+            font-weight:800;
+            letter-spacing:2px;
+            text-shadow: 0 0 18px rgba(56,189,248,0.18);
+        }
+
+        .brand span{
+            color:#38bdf8;
+        }
+
+        .nav-text{
+            color:#94a3b8;
+            font-size:14px;
+        }
+
+        .page{
+            min-height:calc(100vh - 72px);
+            display:grid;
+            grid-template-columns:1.05fr 0.95fr;
+            gap:56px;
+            align-items:center;
+            padding:44px 7%;
+            animation:fadeIn 0.7s ease;
+        }
+
+        .hero-tag{
+            color:#38bdf8;
+            font-size:12px;
+            font-weight:800;
+            letter-spacing:2.4px;
+            text-transform:uppercase;
+            margin-bottom:18px;
+        }
+
+        h1{
+            font-size:clamp(42px,5.8vw,72px);
+            line-height:1;
+            margin:0;
+            letter-spacing:-2px;
+        }
+
+        .subtext{
+            margin-top:22px;
+            color:#9fb3d1;
+            font-size:18px;
+            max-width:520px;
+            line-height:1.55;
+        }
+
+        .meta{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:14px;
+            margin-top:28px;
+        }
+
+        .meta-card{
+            border:1px solid #1f2937;
+            background:#0f172a;
+            border-radius:16px;
+            padding:16px;
+            transition:0.25s ease;
+        }
+
+        .meta-card:hover{
+            border-color:#334155;
+            transform:translateY(-4px);
+            box-shadow:0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .meta-card strong{
+            display:block;
+            font-size:18px;
+            margin-bottom:4px;
+        }
+
+        .meta-card span{
+            color:#94a3b8;
+            font-size:12px;
+        }
+
+        .upload-card{
+            background:#111827;
+            border:1px solid #1f2937;
+            border-radius:24px;
+            padding:30px;
+            box-shadow:0 24px 80px rgba(0,0,0,0.35);
+        }
+
+        .upload-card h2{
+            margin:0 0 8px;
+            font-size:24px;
+        }
+
+        .upload-card p{
+            margin:0 0 24px;
+            color:#9fb3d1;
+            font-size:14px;
+        }
+
+        .upload-box{
+            width:100%;
+            min-height:240px;
+            border:2px dashed #334155;
+            border-radius:20px;
+            padding:34px 22px;
+            text-align:center;
+            background:#0f172a;
+            cursor:pointer;
+
+            transition:
+            border-color 0.25s ease,
+            background 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
+        }
+
+        .upload-box:hover{
+            border-color:#38bdf8;
+            background:#111c33;
+        }
+
+        .upload-box.drag-over{
+            border-color:#38bdf8;
+            background:rgba(56,189,248,0.08);
+            box-shadow:0 0 0 4px rgba(56,189,248,0.08);
+        }
+
+        .upload-icon{
+            width:60px;
+            height:60px;
+            border-radius:18px;
+            background:#1e293b;
+            display:grid;
+            place-items:center;
+            margin-bottom:18px;
+            font-size:26px;
+            color:#38bdf8;
+        }
+
+        .upload-title{
+            font-weight:800;
+            margin-bottom:8px;
+            font-size:16px;
+        }
+
+        .upload-hint{
+            color:#94a3b8;
+            font-size:14px;
+        }
+
+        input[type=file]{
+            display:none;
+        }
+
+        .file-name{
+            margin-top:16px;
+            color:#cbd5e1;
+            font-size:13px;
+            display:none;
+        }
+
+        .preview-wrap{
+            display:none;
+            width:100%;
+            margin-top:20px;
+            border:1px solid #334155;
+            background:#020617;
+            border-radius:16px;
+            padding:10px;
+        }
+
+        .preview-wrap img{
+            width:100%;
+            max-height:260px;
+            object-fit:contain;
+            border-radius:12px;
+        }
+
+        .submit-btn{
+            width:100%;
+            margin-top:22px;
+            background:#2563eb;
+            color:white;
+            border:none;
+            padding:16px 22px;
+            border-radius:14px;
+            cursor:pointer;
+            font-size:16px;
+            font-weight:800;
+            transition:0.25s;
+        }
+
+        .submit-btn:hover{
+            background:#1d4ed8;
+            transform:translateY(-1px);
+            box-shadow:0 10px 25px rgba(37,99,235,0.35);
+        }
+
+        .submit-btn:disabled{
+            opacity:0.7;
+            cursor:not-allowed;
+        }
+
+        .footer{
+            margin-top:18px;
+            color:#64748b;
+            font-size:12px;
+            text-align:center;
+        }
+
+        .loading-overlay{
+            position:fixed;
+            inset:0;
+            background:rgba(8,15,31,0.92);
+            backdrop-filter:blur(12px);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+        }
+
+        .loading-overlay.active{
+            display:flex;
+        }
+
+        .loading-panel{
+            width:90%;
+            max-width:420px;
+            background:#111827;
+            border:1px solid #1f2937;
+            border-radius:24px;
+            padding:34px;
+            text-align:center;
+            box-shadow:0 24px 80px rgba(0,0,0,0.45);
+        }
+
+        .loader-ring{
+            width:64px;
+            height:64px;
+            margin:0 auto 22px;
+            border:3px solid rgba(56,189,248,0.18);
+            border-top-color:#38bdf8;
+            border-radius:50%;
+            animation:spin 0.9s linear infinite;
+        }
+
+        .loading-panel h2{
+            margin:0 0 10px;
+            font-size:24px;
+        }
+
+        .loading-panel p{
+            margin:0 0 22px;
+            color:#94a3b8;
+            font-size:14px;
+        }
+
+        .loading-steps{
+            text-align:left;
+            display:grid;
+            gap:12px;
+        }
+
+        .loading-step{
+            padding:12px 14px;
+            border-radius:14px;
+            background:#0f172a;
+            color:#cbd5e1;
+            font-size:14px;
+            border:1px solid #1f2937;
+        }
+
+        @keyframes spin{
+            to{
+                transform:rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn{
+            from{
+                opacity:0;
+            }
+
+            to{
+                opacity:1;
+            }
+        }
+
+        @media(max-width:900px){
+
+            .navbar{
+                height:64px;
+                padding:0 5%;
+            }
+
+            .brand{
+                font-size:20px;
+            }
+
+            .nav-text{
+                display:none;
+            }
+
+            .page{
+                grid-template-columns:1fr;
+                padding:32px 5%;
+                gap:34px;
+                align-items:start;
+            }
+
+            h1{
+                font-size:48px;
+                letter-spacing:-1.4px;
+            }
+
+            .subtext{
+                font-size:16px;
+            }
+
+            .meta{
+                grid-template-columns:1fr;
+            }
+
+            .upload-card{
+                padding:24px;
+                border-radius:22px;
+            }
+
+            .upload-box{
+                min-height:220px;
+            }
+        }
+
+        @media(max-width:520px){
+
+            .page{
+                padding:28px 4%;
+            }
+
+            h1{
+                font-size:40px;
+            }
+
+            .hero-tag{
+                font-size:11px;
+                letter-spacing:2px;
+            }
+
+            .upload-card{
+                padding:20px;
+                border-radius:20px;
+            }
+
+            .upload-card h2{
+                font-size:22px;
+            }
+
+            .upload-card p{
+                font-size:13px;
+            }
+
+            .upload-box{
+                min-height:200px;
+                padding:28px 18px;
+            }
+
+            .submit-btn{
+                padding:15px 18px;
+                font-size:15px;
+            }
+
+            .loading-panel{
+                padding:26px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="brand">
+            THR<span>AGG</span>
+        </div>
+
+        <div class="nav-text">
+            Election Verification Intelligence
+        </div>
+
+    </nav>
+
+    <main class="page">
+
+        <section>
+
+            <div class="hero-tag">
+                Verification Platform
+            </div>
+
+            <h1>
+                Election Verification Intelligence
+            </h1>
+
+            <p class="subtext">
+                AI-powered EC8A verification and tamper analysis.
+            </p>
+
+            <div class="meta">
+
+                <div class="meta-card">
+                    <strong>OCR</strong>
+                    <span>Number extraction</span>
+                </div>
+
+                <div class="meta-card">
+                    <strong>Logic</strong>
+                    <span>EC8A validation</span>
+                </div>
+
+                <div class="meta-card">
+                    <strong>Risk</strong>
+                    <span>Tamper scoring</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="upload-card">
+
+            <h2>Analyze EC8A Form</h2>
+
+            <p>
+                Upload an image or capture a form using a mobile camera.
+            </p>
+
+            <form id="uploadForm"
+                  action="/predict"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <div class="upload-box" id="uploadBox">
+
+                    <div class="upload-icon">
+                        ▣
+                    </div>
+
+                    <div class="upload-title">
+                        Drop EC8A form here
+                    </div>
+
+                    <div class="upload-hint">
+                        or click to upload / capture image
+                    </div>
+
+                    <input
+                        id="imageInput"
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        capture="environment"
+                        required
+                    >
+
+                    <div class="file-name" id="fileName"></div>
+
+                    <div class="preview-wrap" id="previewWrap">
+                        <img id="imagePreview">
+                    </div>
+
+                </div>
+
+                <button class="submit-btn"
+                        id="submitBtn"
+                        type="submit">
+
+                    Run Verification
+
+                </button>
+
+            </form>
+
+            <div class="footer">
+                THRAGG Verification System
+            </div>
+
+        </section>
+
+    </main>
+
+    <div class="loading-overlay" id="loadingOverlay">
+
+        <div class="loading-panel">
+
+            <div class="loader-ring"></div>
+
+            <h2>Analyzing EC8A Form</h2>
+
+            <p>
+                Please wait while THRAGG verifies the submitted form.
+            </p>
+
+            <div class="loading-steps">
+
+                <div class="loading-step">
+                    Running OCR extraction
+                </div>
+
+                <div class="loading-step">
+                    Validating election logic
+                </div>
+
+                <div class="loading-step">
+                    Computing tamper confidence
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const imageInput = document.getElementById("imageInput");
+        const uploadBox = document.getElementById("uploadBox");
+        const fileName = document.getElementById("fileName");
+        const previewWrap = document.getElementById("previewWrap");
+        const imagePreview = document.getElementById("imagePreview");
+        const uploadForm = document.getElementById("uploadForm");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+
+        uploadBox.addEventListener("click", () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener("change", function(){
+
+            const file = this.files[0];
+
+            if(!file) return;
+
+            fileName.style.display = "block";
+            fileName.textContent = file.name;
+
+            const reader = new FileReader();
+
+            reader.onload = function(e){
+
+                imagePreview.src = e.target.result;
+
+                previewWrap.style.display = "block";
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        ["dragenter","dragover"].forEach(eventName => {
+
+            uploadBox.addEventListener(eventName, function(e){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                uploadBox.classList.add("drag-over");
+
+            });
+
+        });
+
+        ["dragleave","drop"].forEach(eventName => {
+
+            uploadBox.addEventListener(eventName, function(e){
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                uploadBox.classList.remove("drag-over");
+
+            });
+
+        });
+
+        uploadBox.addEventListener("drop", function(e){
+
+            const file = e.dataTransfer.files[0];
+
+            if(!file) return;
+
+            const dataTransfer = new DataTransfer();
+
+            dataTransfer.items.add(file);
+
+            imageInput.files = dataTransfer.files;
+
+            fileName.style.display = "block";
+            fileName.textContent = file.name;
+
+            const reader = new FileReader();
+
+            reader.onload = function(event){
+
+                imagePreview.src = event.target.result;
+
+                previewWrap.style.display = "block";
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        uploadForm.addEventListener("submit", function(){
+
+            loadingOverlay.classList.add("active");
+
+        });
+
+    </script>
+
+</body>
+
+</html>
